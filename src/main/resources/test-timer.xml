@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+    ">
+    <!-- <context:annotation-config/> -->
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+    <context:component-scan base-package="com.wl.batch"/>  
+    <bean name="testQuartzJob" class="com.wl.batch.TestQuartzJob" />  
+    <bean id="testQuartzJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+        <property name="targetObject">  
+            <ref bean="testQuartzJob" />  
+        </property>  
+        <property name="targetMethod">  
+            <value>test</value>  
+        </property>  
+        <property name="concurrent">
+            <value>false</value>
+        </property>
+    </bean>  
+    <bean id="testQuartzJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+        <property name="jobDetail">  
+            <ref bean="testQuartzJobDetail" />  
+        </property>  
+        <property name="cronExpression">  
+            <value>${grepTime}</value>  
+        </property>  
+    </bean>  
+    
+  
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean" autowire="no">  
+        <property name="triggers">  
+            <list>  
+                <ref bean="testQuartzJobTrigger" />  
+            </list>  
+        </property>  
+    </bean>  
+    
+</beans>
